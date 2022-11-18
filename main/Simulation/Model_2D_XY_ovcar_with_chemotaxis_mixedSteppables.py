@@ -189,20 +189,20 @@ class Model_2D_2cell_with_ExpotenSteppable(SteppableBasePy):
             if L_NON_SEN != 0:
                 Avol_NON_SEN += cell.volume/L_NON_SEN
                 cell.dict['pressure'] = 2*cell.lambdaVolume*(cell.targetVolume - cell.volume)
-                Ap_NON_SEN += cell.dict['pressure']/L_NON_SEN
+                #Ap_NON_SEN += cell.dict['pressure']/L_NON_SEN
             if mcs > div_time:
-                if -(cell.pressure) > 0: #int(cell.dict['pressure']) > 0:
+                if cell.dict['pressure'] > 0:   #-(cell.pressure) > 0: #int(cell.dict['pressure']) > 0:
                     #print("inside positive pressure cond")
-                    cell.targetVolume += rng.uniform(0.6, 1.4)*25/500*(1 - ((-cell.pressure)**8)/((-cell.pressure)**8 + (75**8)))#25/500*max(0, p_ref_NON_SEN-cell.dict['pressure'])
+                    cell.targetVolume += rng.uniform(0.6, 1.4)*25/500*(1 - ((cell.dict['pressure'])**8)/((cell.dict['pressure'])**8 + (75**8)))#25/500*max(0, p_ref_NON_SEN-cell.dict['pressure'])
                     
                 
         if (mcs > sort_time and L_CANCER):
             for cell in self.cell_list_by_type(self.CANCER):    
                 #Avol_CANCER += cell.volume/L_CANCER
-                #cell.dict['pressure'] = 2*cell.lambdaVolume*(cell.targetVolume - cell.volume)
+                cell.dict['pressure'] = 2*cell.lambdaVolume*(cell.targetVolume - cell.volume)
                 #Ap_CANCER += cell.dict['pressure']/L_CANCER
-                if mcs > sort_time:
-                    cell.targetVolume += rng.uniform(0.8, 1.2)*75/1000*(1 - ((-cell.pressure)**4)/((-cell.pressure)**4 + (1500**4))) #25/200 *(amount/(self.shared_steppable_vars["total_amount"])) + 25/200*max(0, p_ref_CANCER - cell.dict['pressure'])
+                if mcs > sort_time and cell.dict['pressure'] > 0:
+                    cell.targetVolume += rng.uniform(0.8, 1.2)*75/1000*(1 - ((cell.dict['pressure'])**4)/((cell.dict['pressure'])**4 + (1500**4))) #25/200 *(amount/(self.shared_steppable_vars["total_amount"])) + 25/200*max(0, p_ref_CANCER - cell.dict['pressure'])
                     
         
         for cell in self.cell_list_by_type(self.SEN):
